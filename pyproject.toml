@@ -1,0 +1,43 @@
+[project]
+name = "simplevk"
+version = "1.0.0"
+description = "Lightweight VK API wrapper designed for fast and easy bot development."
+readme = "README.md"
+authors = [
+    { name = "slyf", email = "m@slyf.ru" }
+]
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["vk", "api", "bot", "wrapper", "simplevk"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "cachebox>=5.1.0",
+    "certifi",
+    "chardet>=5.2.0",
+    "dacite>=1.9.2",
+    "orjson>=3.11.4",
+    "requests>=2.32.5",
+    "vk-api>=11.10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/tslyf/simplevk"
+Repository = "https://github.com/tslyf/simplevk"
+Issues = "https://github.com/tslyf/simplevk/issues"
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.1",
+]
