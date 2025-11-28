@@ -177,14 +177,8 @@ class ChoiceArg(Arg, Generic[T]):
             if match := pattern.match(value):
                 return result_val, value[match.end() :]
 
-        expected = []
-        for val, _ in self._lookup:
-            if isinstance(val, Enum):
-                expected.append(val.value)
-            else:
-                expected.append(str(val))
-
-        raise ValidationError(value, f"Ожидалось: {', '.join(expected)}")
+        expected = [val.value if isinstance(val, Enum) else val for val, _ in self._lookup]
+        raise ValidationError(value, f"Ожидалось: {', '.join(map(str, expected))}")
 
 
 @dataclass(slots=True, unsafe_hash=True)
