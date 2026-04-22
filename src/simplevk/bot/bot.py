@@ -1,4 +1,5 @@
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock, Thread
 from typing import Any, Callable
@@ -101,14 +102,24 @@ class Bot:
 
     def listen(self):
         logger.info("Longpoll listen started.")
+        current_delay = 1
+        max_delay = 30
+
         while True:
             try:
                 for event in self.longpoll.check():
                     self.executor.submit(self.handle_events, event, "lp")
+
+                current_delay = 1
+
             except (Timeout, ReadTimeoutError):
                 pass
+
             except Exception as err:
                 self.error_handler(err, None)
+
+                time.sleep(current_delay)
+                current_delay = min(current_delay * 2, max_delay)
 
     def start_listen(self, *, join_lp: bool = True, print_banner: bool = True):
         if self.longpoll.url is None:

@@ -324,7 +324,7 @@ class Comments:
 class PostSource:
     type: str
     platform: str
-    data: str
+    data: str | None = None
     url: str
 
 
@@ -356,7 +356,7 @@ class WallDonut:
     paid_duration: int | None = None
     placeholder: str | None = None
     can_publish_free_copy: bool = False
-    edit_mode: str
+    edit_mode: str | None = None
 
 
 @dataclass(slots=True, kw_only=True)

@@ -1,6 +1,6 @@
 [project]
 name = "simplevk"
-version = "1.0.1"
+version = "1.0.2"
 description = "Lightweight VK API wrapper designed for fast and easy bot development."
 readme = "README.md"
 authors = [

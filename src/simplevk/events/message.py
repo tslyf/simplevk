@@ -74,8 +74,8 @@ class Message(BaseEvent):
         )
 
         self.from_id: int = event["from_id"]
-        self.peer_id: int = event["peer_id"]
-        self.from_chat: bool = self.peer_id != self.from_id
+        self.peer_id: int = event.get("peer_id", 0)
+        self.from_chat: bool = self.peer_id > 0 and self.peer_id != self.from_id
         self.from_user: bool = self.from_id > 0
         self.from_group: bool = self.from_id < 0
 
