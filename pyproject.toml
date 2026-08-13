@@ -1,6 +1,6 @@
 [project]
 name = "simplevk"
-version = "1.0.2"
+version = "1.0.3"
 description = "Lightweight VK API wrapper designed for fast and easy bot development."
 readme = "README.md"
 authors = [
@@ -19,7 +19,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "cachebox>=5.1.0",
     "certifi",
     "chardet>=5.2.0",
     "dacite>=1.9.2",

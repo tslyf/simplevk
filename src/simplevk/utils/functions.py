@@ -1,6 +1,8 @@
 import inspect
+import time
 from collections import OrderedDict
-from threading import RLock
+from functools import wraps
+from threading import Lock, RLock
 from typing import Any, Callable, Mapping, Sequence, TypeVar, overload
 
 import orjson
@@ -177,3 +179,42 @@ def call_with_allowed_args(func: Callable[..., T], *args, **kwargs) -> T:
                 call_kwargs[k] = v
 
     return func(*call_args, **call_kwargs)
+
+
+def ttl_cache(
+    maxsize: int = 250,
+    ttl: float = 3600,
+    key_maker: Callable[[tuple[Any, ...], dict[str, Any]], Any] | None = None,
+):
+    cache = {}
+    lock = Lock()
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            key = key_maker(args, kwargs) if key_maker else args
+            now = time.time()
+
+            with lock:
+                if key in cache:
+                    result, expire_at = cache[key]
+                    if now < expire_at:
+                        return result
+                    else:
+                        del cache[key]
+
+            result = func(*args, **kwargs)
+
+            with lock:
+                if len(cache) >= maxsize:
+                    try:
+                        cache.pop(next(iter(cache)))
+                    except StopIteration:
+                        pass
+                cache[key] = (result, now + ttl)
+
+            return result
+
+        return wrapper
+
+    return decorator

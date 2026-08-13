@@ -4,9 +4,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeVar, overload
 
-from cachebox import TTLCache, cached
-
 from simplevk.events import Message
+from simplevk.utils.functions import ttl_cache
 
 from .errors import ValidationError
 
@@ -36,7 +35,11 @@ BOOLEAN_CHOICES: dict[bool, list[Variant] | Variant] = {
 
 
 def _cache_key(args: tuple[Any, ...], kwargs: dict[str, Any]) -> tuple[Any, ...]:
-    return (kwargs.get("screen_name") or args[2],)
+    if "screen_name" in kwargs:
+        return (kwargs["screen_name"],)
+    if len(args) > 2:
+        return (args[2],)
+    return (None,)
 
 
 @dataclass(unsafe_hash=True)
@@ -177,7 +180,9 @@ class ChoiceArg(Arg, Generic[T]):
             if match := pattern.match(value):
                 return result_val, value[match.end() :]
 
-        expected = [val.value if isinstance(val, Enum) else val for val, _ in self._lookup]
+        expected = [
+            val.value if isinstance(val, Enum) else val for val, _ in self._lookup
+        ]
         raise ValidationError(value, f"Ожидалось: {', '.join(map(str, expected))}")
 
 
@@ -260,10 +265,7 @@ class PeerIDArg(Arg):
                 "allow_user and allow_group cannot be False at the same time"
             )
 
-    @cached(
-        TTLCache(maxsize=250, ttl=60 * 60),
-        key_maker=_cache_key,
-    )
+    @ttl_cache(maxsize=250, ttl=60 * 60, key_maker=_cache_key)
     def _resolve_screen_name(self, bot: "Bot", screen_name: str) -> int | None:
         _resolved_id = None
         try:
